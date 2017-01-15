@@ -4,6 +4,7 @@ import android.support.annotation.LayoutRes;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.z4.zoptimization.ZOptimization;
 
@@ -14,7 +15,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(getProperContentView(R.layout.activity_main));
+        View contentView = getProperContentView(R.layout.activity_main);
+        setContentView(contentView);
     }
 
     protected View getProperContentView(@LayoutRes int layoutResId) {
