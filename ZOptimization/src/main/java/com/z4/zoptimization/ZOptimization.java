@@ -2,6 +2,7 @@ package com.z4.zoptimization;
 
 import android.app.Service;
 import android.content.Context;
+import android.support.annotation.LayoutRes;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -22,17 +23,18 @@ public class ZOptimization {
     private static Context sContext;
     private LayoutInflater mLayoutInflater;
     private List<Integer> mExcludeIds;
-    private int mResId;
+    private ViewGroup mViewGroup;
+    private int mLayoutId;
     private int mCurrentDisplayWidth = DEFAULT_SCREEN_VALUE;
     private int mCurrentDisplayHeight = DEFAULT_SCREEN_VALUE;
     private int mDefaultDisplayWidth = DEFAULT_SCREEN_VALUE;
     private int mDefaultDisplayHeight = DEFAULT_SCREEN_VALUE;
     private short mDeviceType = ALL_DEVICES;
+    private short mCurrDeviceType = PHONE;
     private boolean mPaddingEnabled = true;
     private boolean mMarginEnabled = true;
     private boolean mViewSizeEnabled = true;
     private boolean mTextSizeEnabled = true;
-    private boolean isTablet;
 
     private ZOptimization() {
         if (checkNull(sContext)) return;
@@ -50,15 +52,21 @@ public class ZOptimization {
         mCurrentDisplayHeight = getCurrentDisplayHeight(sContext);
     }
 
-    private ViewGroup beginOptimization() {
-        ViewGroup viewGroup = (ViewGroup) mLayoutInflater.inflate(mResId, null);
-        if (checkNull(sContext)) return viewGroup;
+    private ViewGroup getViewGroup() {
+        return checkNull(mViewGroup) ? (ViewGroup) mLayoutInflater.inflate(mLayoutId, null)
+                : mViewGroup;
+    }
 
-        isTablet = isTablet(sContext);
-        Log.d(LOG_TAG, "RESOURCE ID = " + mResId);
+    private ViewGroup beginOptimization() {
+        ViewGroup viewGroup = getViewGroup();
+        mCurrDeviceType = isTablet(sContext) ? TABLET : PHONE;
+        Log.d(LOG_TAG, "DEVICE PROPER = " + isProperDeviceType());
+        if (checkNull(sContext) || !isProperDeviceType()) return viewGroup;
+
+        Log.d(LOG_TAG, "RESOURCE ID = " + mLayoutId);
         Log.d(LOG_TAG, "DEF HEIGHT = " + mDefaultDisplayHeight + " DEF WIDTH = " + mDefaultDisplayWidth);
         Log.d(LOG_TAG, "CURR HEIGHT = " + mCurrentDisplayHeight + " CURR WIDTH = " + mCurrentDisplayWidth);
-        Log.d(LOG_TAG, "IS TABLET = " + isTablet);
+        Log.d(LOG_TAG, "IS TABLET = " + mCurrDeviceType);
 
         return fullOptimization(viewGroup);
     }
@@ -146,6 +154,10 @@ public class ZOptimization {
         }
     }
 
+    private boolean isProperDeviceType() {
+        return (mDeviceType == ALL_DEVICES || mDeviceType == mCurrDeviceType);
+    }
+
     private boolean containsId(int id) {
         return mExcludeIds != null && mExcludeIds.contains(id);
     }
@@ -154,7 +166,7 @@ public class ZOptimization {
         if (!checkIfNotZero(value)) return value;
         value -= E;
 
-        return isTablet ? value *= TABLET_COF : value;
+        return mCurrDeviceType == TABLET ? value *= TABLET_COF : value;
     }
 
     public int getProperMarginY(int marginY) {
@@ -222,8 +234,13 @@ public class ZOptimization {
             return this;
         }
 
-        public ZOptimizationBuilder resourceId(int resId) {
-            ZOptimization.this.mResId = resId;
+        public ZOptimizationBuilder layout(@LayoutRes int layoutId) {
+            ZOptimization.this.mLayoutId = layoutId;
+            return this;
+        }
+
+        public ZOptimizationBuilder layout(ViewGroup viewGroup) {
+            ZOptimization.this.mViewGroup = viewGroup;
             return this;
         }
 
