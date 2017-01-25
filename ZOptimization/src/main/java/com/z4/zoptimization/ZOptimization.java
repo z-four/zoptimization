@@ -14,10 +14,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.z4.zoptimization.ZConst.*;
-import static com.z4.zoptimization.ZConst.DeviceType.*;
-import static com.z4.zoptimization.ZConst.ViewParams.*;
 import static com.z4.zoptimization.ZUtils.*;
+import static com.z4.zoptimization.ZConst.*;
+import static com.z4.zoptimization.ZConst.ViewParams.*;
+import static com.z4.zoptimization.ZConst.DeviceType.*;
 
 public class ZOptimization {
     private static Context sContext;
@@ -114,8 +114,9 @@ public class ZOptimization {
             int properHeight = height != WRAP_CONTENT && height != MATCH_PARENT ?
                     getProperHeight(height) : height;
 
-            properWidth = getProperParam(properWidth == 0 ? ++properWidth : properWidth);
             properHeight = getProperParam(properHeight == 0 ? ++properHeight : properHeight);
+            properWidth = width == height ? properHeight :
+                    getProperParam(properWidth == 0 ? ++properWidth : properWidth);
 
             layoutParams.width = properWidth;
             layoutParams.height = properHeight;

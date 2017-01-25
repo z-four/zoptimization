@@ -1,5 +1,35 @@
 <resources>
-    <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="splash_text_size">190px</dimen>
+    <dimen name="splash_text_margin_bottom">20px</dimen>
+
+    <dimen name="splash_input_layout_margin_top">40px</dimen>
+    <dimen name="splash_input_layout_width">600px</dimen>
+
+    <dimen name="splash_edittext_height">80px</dimen>
+    <dimen name="splash_edittext_margin_top">20px</dimen>
+    <dimen name="splash_edittext_container_margin_horizontal">20px</dimen>
+    <dimen name="splash_edittext_text_size">22px</dimen>
+    <dimen name="splash_edittext_image_margin_horizontal">20px</dimen>
+    <dimen name="splash_edittext_image_size">40px</dimen>
+    <dimen name="splash_edittext_show_button_width">110px</dimen>
+    <dimen name="splash_edittext_show_button_text_size">16px</dimen>
+    <dimen name="splash_edittext_show_button_margins">15px</dimen>
+
+    <dimen name="splash_forgot_text_height">80px</dimen>
+    <dimen name="splash_forgot_text_width">500px</dimen>
+    <dimen name="splash_forgot_text_margin_top">40px</dimen>
+    <dimen name="splash_forgot_text_size">22px</dimen>
+
+    <dimen name="splash_button_text_size">22px</dimen>
+    <dimen name="splash_button_height">80px</dimen>
+    <dimen name="splash_button_width">500px</dimen>
+    <dimen name="splash_button_margin_top">55px</dimen>
+
+    <dimen name="splash_social_buttons_container_height">80px</dimen>
+    <dimen name="splash_social_buttons_text_size">23px</dimen>
+    <dimen name="splash_social_divider_height">10px</dimen>
+    <dimen name="splash_social_divider_circle_size">60px</dimen>
+    <dimen name="splash_social_divider_text_size">19px</dimen>
+
 </resources>

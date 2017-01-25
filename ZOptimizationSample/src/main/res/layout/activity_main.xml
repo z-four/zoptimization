@@ -1,13 +1,183 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_main"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/splash_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.z4.example.zoptimization.MainActivity">
+    android:background="@color/dark_blue_color">
+
+    <LinearLayout
+        android:id="@+id/input_views_container"
+        android:layout_width="@dimen/splash_input_layout_width"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="@dimen/splash_edittext_margin_top"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/splash_edittext_height"
+            android:background="@drawable/splash_edittext_backgorund"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/login_edittext_image"
+                android:layout_width="@dimen/splash_edittext_image_size"
+                android:layout_height="@dimen/splash_edittext_image_size"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/splash_edittext_image_margin_horizontal" />
+
+            <EditText
+                android:id="@+id/input_login"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/splash_edittext_container_margin_horizontal"
+                android:layout_marginRight="@dimen/splash_edittext_container_margin_horizontal"
+                android:background="@color/transparent_color"
+                android:hint="@string/login"
+                android:inputType="text"
+                android:textColor="@color/white_color"
+                android:textColorHint="@color/blue_white_color"
+                android:textSize="@dimen/splash_edittext_text_size" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/splash_edittext_height"
+            android:layout_marginTop="@dimen/splash_edittext_margin_top"
+            android:background="@drawable/splash_edittext_backgorund">
+
+            <ImageView
+
+                android:id="@+id/password_edittext_image"
+                android:layout_width="@dimen/splash_edittext_image_size"
+                android:layout_height="@dimen/splash_edittext_image_size"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/splash_edittext_image_margin_horizontal" />
+
+            <Button
+                android:id="@+id/show_password_button"
+                android:layout_width="@dimen/splash_edittext_show_button_width"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_margin="@dimen/splash_edittext_show_button_margins"
+                android:background="@drawable/show_password_button_background"
+                android:text="@string/Show"
+                android:textColor="@color/blue_white_color"
+                android:textSize="@dimen/splash_edittext_show_button_text_size" />
+
+            <EditText
+                android:id="@+id/input_password"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="@dimen/splash_edittext_container_margin_horizontal"
+                android:layout_marginRight="@dimen/splash_edittext_container_margin_horizontal"
+                android:layout_toLeftOf="@id/show_password_button"
+                android:layout_toRightOf="@id/password_edittext_image"
+                android:background="@drawable/splash_edittext_backgorund"
+                android:gravity="center_vertical"
+                android:hint="@string/password"
+                android:inputType="textPassword"
+                android:textColor="@color/white_color"
+                android:textColorHint="@color/blue_white_color"
+                android:textSize="@dimen/splash_edittext_text_size" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/splash_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/input_views_container"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/splash_text_margin_bottom"
+        android:gravity="center"
+        android:text="@string/app_name"
+        android:textColor="@color/white_blue_alpha_color"
+        android:textSize="@dimen/splash_text_size" />
+
+    <Button
+        android:id="@+id/login_button"
+        android:layout_width="@dimen/splash_button_width"
+        android:layout_height="@dimen/splash_button_height"
+        android:layout_below="@id/input_views_container"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/splash_button_margin_top"
+        android:background="@drawable/login_button_background"
+        android:text="@string/login"
+        android:textColor="@color/white_color"
+        android:textSize="@dimen/splash_button_text_size" />
+
+    <TextView
+        android:id="@+id/forgot_text"
+        android:layout_width="@dimen/splash_forgot_text_width"
+        android:layout_height="@dimen/splash_forgot_text_height"
+        android:layout_below="@id/login_button"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/forgot_background"
+        android:clickable="true"
+        android:gravity="center"
+        android:text="@string/forgot_password"
+        android:textColor="@color/blue_white_color"
+        android:textSize="@dimen/splash_forgot_text_size" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/splash_social_buttons_container_height"
+        android:layout_alignParentBottom="true">
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="@dimen/splash_social_divider_height"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toLeftOf="@id/divider"
+            android:background="@drawable/facebook_background"
+            android:clickable="true"
+            android:gravity="center"
+            android:text="@string/facebook"
+            android:textColor="@color/white_color"
+            android:textSize="@dimen/splash_social_buttons_text_size" />
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@id/divider"
+            android:background="@drawable/vkontakte_background"
+            android:clickable="true"
+            android:gravity="center"
+            android:text="@string/vkontakte"
+            android:textColor="@color/white_color"
+            android:textSize="@dimen/splash_social_buttons_text_size" />
+
+        <RelativeLayout
+            android:id="@+id/divider_or"
+            android:layout_width="@dimen/splash_social_divider_circle_size"
+            android:layout_height="@dimen/splash_social_divider_circle_size"
+            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"
+            android:background="@drawable/login_circle_or_background">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/or"
+                android:textColor="@color/dark_blue_color"
+                android:textSize="@dimen/splash_social_divider_text_size"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+    </RelativeLayout>
 
 </RelativeLayout>

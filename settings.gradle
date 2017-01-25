@@ -1,1 +1,1 @@
-include ':ZOptimizationSample', ':ZOptimization'
+include ':ZOptimization', ':app', ':ZOptimizationSample'
