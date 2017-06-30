@@ -8,14 +8,15 @@ import android.view.WindowManager;
 
 public class ZUtils {
 
-    public static boolean checkIfNotZero (int value) {
-        if(value > 0) return true;
-        return false;
+    static boolean checkIfNotZero (float value) {
+        return value > 0;
     }
 
-    public static boolean checkNull (Object... object) {
+    static boolean isNull(Object... object) {
         boolean isNull = false;
-        for(int i = 0;i<object.length;i++) {
+        int objectsCount = object.length;
+
+        for(int i = 0; i < objectsCount; i++) {
             if(object[i] == null) {
                 isNull = true;
                 break;
@@ -24,10 +25,18 @@ public class ZUtils {
         return isNull;
     }
 
-    public static boolean isTablet(Context context) {
+    static boolean isTablet(Context context) {
         return (context.getResources().getConfiguration().screenLayout
                 & Configuration.SCREENLAYOUT_SIZE_MASK)
                 >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+    }
+
+    static float getDensity(Context context) {
+        return context.getResources().getDisplayMetrics().density;
+    }
+
+    static float getScaledDensity(Context context) {
+        return context.getResources().getDisplayMetrics().scaledDensity;
     }
 
     public static int getCurrentDisplayWidth(Context context) {

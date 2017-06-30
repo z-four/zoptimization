@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/splash_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -39,7 +40,6 @@
                 android:textColor="@color/white_color"
                 android:textColorHint="@color/blue_white_color"
                 android:textSize="@dimen/splash_edittext_text_size" />
-
         </LinearLayout>
 
         <RelativeLayout
@@ -49,6 +49,7 @@
             android:background="@drawable/splash_edittext_backgorund">
 
             <ImageView
+
                 android:id="@+id/password_edittext_image"
                 android:layout_width="@dimen/splash_edittext_image_size"
                 android:layout_height="@dimen/splash_edittext_image_size"
@@ -177,7 +178,6 @@
                 android:textStyle="bold" />
 
         </RelativeLayout>
-
     </RelativeLayout>
 
 </RelativeLayout>
