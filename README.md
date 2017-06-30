@@ -24,9 +24,9 @@ Usage
     android:layout_height="match_parent">
     
     <Button
-        android:layout_marginLeft="10px"
-        android:layout_width="300px"
-        android:layout_height="200px" />
+        android:layout_marginLeft="10dp"
+        android:layout_width="300dp"
+        android:layout_height="200dp" />
     ...
   </RelativeLayout>
 ```
@@ -37,11 +37,17 @@ Usage
 public class MainActivity extends Activity {
     private final static int DEFAULT_DISPLAY_HEIGHT = 1280;
     private final static int DEFAULT_DISPLAY_WIDTH  = 768;
+    private final static float DEFAULT_SCALED_DENSITY = 3.0f;
+    private final static float DEFAULT_DENSITY  = 3.0f;
     
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getProperContentView());
+        
+        //How to get density & scaledDensity for tested device
+        float density = getResources().getDisplayMetrics().density; // = DEFAULT_DENSITY
+        float scaledDensity = getResources().getDisplayMetrics().scaledDensity; // = DEFAULT_SCALED_DENSITY
         ...
     }
 
@@ -50,7 +56,9 @@ public class MainActivity extends Activity {
                 .layout(R.layout.activity_main)
                 .excludeIds(R.id.divider, R.id.login_button) //Disable optimization for specific ids.
                 .deviceType(ZConst.DeviceType.TABLET) //Optimized for tablets only.
-                .defaultDisplaySize(DEFAULT_DISPLAY_WIDTH, DEFAULT_DISPLAY_HEIGHT)
+                .defaultDisplaySize(DEFAULT_DISPLAY_WIDTH, DEFAULT_DISPLAY_HEIGHT) //Tested device display width & height
+                .measureConfiguration(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_DENSITY) //Setup dp optimization.
+                .textConfiguration(TypedValue.COMPLEX_UNIT_SP, DEFAULT_SCALED_DENSITY) //Setup sp optimization.
                 .determinateDisplaySize()
                 .makeOptimization();
     }
