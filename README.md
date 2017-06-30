@@ -64,14 +64,14 @@ public class MainActivity extends Activity {
     }
 }
 ```
-#### Note: library works correctly only with px.
+#### Note: measureConfiguration and textConfiguration by default = TypedValue.COMPLEX_UNIT_PX.
 
 Download
 --------
 
 ```groovy
 dependencies {
-  compile 'com.github.z-four:zoptimization:1.0'
+  compile 'com.github.z-four:zoptimization:1.0.1'
 }
 ```
 
