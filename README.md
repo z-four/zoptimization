@@ -90,7 +90,7 @@ Methods
 --------
 
 | Name | Description |
-----|----|-------|-----------|
+|-------|------------|
 |layout(int)| Set layout id which need to optimize|
 |layout(ViewGroup)| Set ViewGroup which need to optimize|
 |deviceType(short)| Set device type (default: ALL_DEVICES)|
@@ -98,6 +98,9 @@ Methods
 |currentDisplaySize(int, int)| Set current display size (width, height)|
 |determinateDisplaySize()| Auto-determine current display size|
 |excludeIds(int[])| Disable optimization for specific ids|
+|measureConfiguration(short, int[])| Setup complexUnit & tested device density|
+|textConfiguration(short, int[])| Setup complexUnit & tested device scaledDensity|
+|disableOptimization(short, int[])| Setup optimization type (ZOptimization.Type) & specific ids for disable|
 |marginEnable(boolean)| Enable or disable margin optimization (default: true)|
 |paddingEnable(boolean)| Enable or disable padding optimization (default: true)|
 |textSizeEnable(boolean)| Enable or disable text size optimization (default: true)|
