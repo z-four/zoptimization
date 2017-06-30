@@ -90,7 +90,7 @@ Methods
 --------
 
 | Name | Description |
-|:----:|:----:|:-------:|:-----------:|
+----|----|-------|-----------|
 |layout(int)| Set layout id which need to optimize|
 |layout(ViewGroup)| Set ViewGroup which need to optimize|
 |deviceType(short)| Set device type (default: ALL_DEVICES)|
