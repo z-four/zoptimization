@@ -2,8 +2,8 @@ package com.z4.zoptimization;
 
 import android.app.Service;
 import android.content.Context;
+import android.graphics.Point;
 import android.support.annotation.LayoutRes;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,15 +16,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.z4.zoptimization.ZOptimization.Type.*;
-import static com.z4.zoptimization.ZUtils.*;
-import static com.z4.zoptimization.ZConst.*;
-import static com.z4.zoptimization.ZConst.ViewParams.*;
-import static com.z4.zoptimization.ZConst.DeviceType.*;
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.widget.ListPopupWindow.WRAP_CONTENT;
+import static com.z4.zoptimization.ZOptimization.DeviceType.ALL;
+import static com.z4.zoptimization.ZOptimization.DeviceType.PHONE;
+import static com.z4.zoptimization.ZOptimization.DeviceType.TABLET;
+import static com.z4.zoptimization.ZOptimization.OptimizationType.*;
+import static com.z4.zoptimization.Utils.*;
 import static android.util.TypedValue.COMPLEX_UNIT_PX;
 
 public class ZOptimization {
-    private static Context sContext;
+    private static final float TABLET_COF = 1.075f;
+    private static final int E = 1;
+    private static final int DEFAULT_SCREEN_VALUE = 1;
+
+    private String LOG_TAG = "zoptimization";
+
+    private Context mContext;
     private LayoutInflater mLayoutInflater;
     private List<Integer> mExcludeIds;
     private Map<Short, List<Integer>> mConfigIds;
@@ -44,46 +52,48 @@ public class ZOptimization {
     private float mCurrentDensity = 1.0f;
     private float mCurrentScaledDensity = 1.0f;
 
-    private short mDeviceType = ALL_DEVICES;
+    private short mDeviceType = ALL;
     private short mCurrDeviceType = PHONE;
     private boolean mPaddingEnabled = true;
     private boolean mMarginEnabled = true;
     private boolean mViewSizeEnabled = true;
     private boolean mTextSizeEnabled = true;
 
-    public interface Type {
-        short VIEW_OPTIMIZATION = 1;
-        short TEXT_OPTIMIZATION = 2;
-        short PADDING_OPTIMIZATION = 3;
-        short MARGIN_OPTIMIZATION = 4;
+    public interface OptimizationType {
+        short VIEW = 1;
+        short TEXT = 2;
+        short PADDING = 3;
+        short MARGIN = 4;
     }
 
-    private ZOptimization() {
-        if (isNull(sContext)) return;
-        mLayoutInflater = (LayoutInflater) sContext.getSystemService(Service.LAYOUT_INFLATER_SERVICE);
+    public interface DeviceType {
+        short PHONE = 1;
+        short TABLET = 2;
+        short ALL = 3;
     }
 
-    public static void init(Context context) {
-        sContext = context;
+    private ZOptimization(Context context) {
+        mContext = context;
+        mLayoutInflater = (LayoutInflater) mContext.getSystemService(Service.LAYOUT_INFLATER_SERVICE);
     }
 
     private void determinateDisplaySize() {
-        if (isNull(sContext)) return;
+        if (isNull(mContext)) return;
 
-        mCurrentDisplayWidth = getCurrentDisplayWidth(sContext);
-        mCurrentDisplayHeight = getCurrentDisplayHeight(sContext);
+        Point point = getCurrentDisplayMetrics(mContext);
+        mCurrentDisplayWidth = point.x;
+        mCurrentDisplayHeight = point.y;
     }
 
     private ViewGroup getViewGroup() {
-        return isNull(mViewGroup) ? (ViewGroup) mLayoutInflater.inflate(mLayoutId, null)
-                : mViewGroup;
+        return isNull(mViewGroup) ? (ViewGroup) mLayoutInflater.inflate(mLayoutId, null) : mViewGroup;
     }
 
     private ViewGroup beginOptimization() {
         ViewGroup viewGroup = getViewGroup();
-        mCurrDeviceType = isTablet(sContext) ? TABLET : PHONE;
+        mCurrDeviceType = isTablet(mContext) ? TABLET : PHONE;
 
-        if (isNull(sContext) || !isProperDeviceType()) return viewGroup;
+        if (isNull(mContext) || !isProperDeviceType()) return viewGroup;
 
         return fullOptimization(viewGroup);
     }
@@ -111,7 +121,7 @@ public class ZOptimization {
     }
 
     private void textSizeOptimization(View view) {
-        if (!isOptimizationDisable(TEXT_OPTIMIZATION, view.getId())) {
+        if (!isOptimizationDisable(TEXT, view.getId())) {
             if (view instanceof TextView) {
                 int textSize = getProperTextSize((int) ((TextView) view).getTextSize());
                 ((TextView) view).setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
@@ -122,7 +132,7 @@ public class ZOptimization {
     private void sizeOptimization(View view) {
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
 
-        if (!isNull(layoutParams) && !isOptimizationDisable(VIEW_OPTIMIZATION, view.getId())) {
+        if (!isNull(layoutParams) && !isOptimizationDisable(VIEW, view.getId())) {
             int width = layoutParams.width;
             int height = layoutParams.height;
 
@@ -143,7 +153,7 @@ public class ZOptimization {
     }
 
     private void paddingOptimization(View view) {
-        if (!isOptimizationDisable(PADDING_OPTIMIZATION, view.getId())) {
+        if (!isOptimizationDisable(PADDING, view.getId())) {
             int properTopPadding = getProperParam(getProperMarginY(view.getPaddingTop()));
             int properBottomPadding = getProperParam(getProperMarginY(view.getPaddingBottom()));
             int properLeftPadding = getProperParam(getProperMarginX(view.getPaddingLeft()));
@@ -156,7 +166,7 @@ public class ZOptimization {
     private void marginOptimization(View view) {
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
 
-        if (!isNull(params) && !isOptimizationDisable(MARGIN_OPTIMIZATION, view.getId())) {
+        if (!isNull(params) && !isOptimizationDisable(MARGIN, view.getId())) {
             int marginTop = getProperParam(getProperMarginY(params.topMargin));
             int marginBottom = getProperParam(getProperMarginY(params.bottomMargin));
             int marginLeft = getProperParam(getProperMarginX(params.leftMargin));
@@ -172,7 +182,7 @@ public class ZOptimization {
     }
 
     private boolean isProperDeviceType() {
-        return (mDeviceType == ALL_DEVICES || mDeviceType == mCurrDeviceType);
+        return (mDeviceType == ALL || mDeviceType == mCurrDeviceType);
     }
 
     private boolean isOptimizationDisable (short optimizationType, int id) {
@@ -185,7 +195,7 @@ public class ZOptimization {
     }
 
     private int getProperParam(int value) {
-        if (!checkIfNotZero(value)) return value;
+        if (isEmpty(value)) return value;
         value -= E;
 
         return mCurrDeviceType == TABLET ? value *= TABLET_COF : value;
@@ -236,13 +246,12 @@ public class ZOptimization {
         return getProperHeight(currViewHeight);
     }
 
-    public static ZOptimization get() {
-        return new ZOptimization();
+    public static ZOptimization get(Context context) {
+        return new ZOptimization(context);
     }
 
     public static ZOptimizationBuilder withContext(Context context) {
-        init(context);
-        return get().new ZOptimizationBuilder();
+        return get(context).new ZOptimizationBuilder();
     }
 
     //Builder
@@ -306,7 +315,7 @@ public class ZOptimization {
         }
 
         public ZOptimizationBuilder measureConfiguration(int complexUnit, float defaultScreenDensity) {
-            ZOptimization.this.mCurrentDensity = getDensity(sContext);
+            ZOptimization.this.mCurrentDensity = getDensity(mContext);
             ZOptimization.this.mDefaultDensity = defaultScreenDensity;
             ZOptimization.this.mViewSizeComplexUnit = complexUnit;
             return this;
@@ -315,7 +324,7 @@ public class ZOptimization {
         public ZOptimizationBuilder textConfiguration(int complexUnit, float defaultScreenDensity) {
             ZOptimization.this.mTextSizeComplexUnit = complexUnit;
             ZOptimization.this.mDefaultScaledDensity = defaultScreenDensity;
-            ZOptimization.this.mCurrentScaledDensity = getScaledDensity(sContext);
+            ZOptimization.this.mCurrentScaledDensity = getScaledDensity(mContext);
             return this;
         }
 
@@ -325,7 +334,7 @@ public class ZOptimization {
         }
 
         public ZOptimizationBuilder deviceType(short type) {
-            if (type >= PHONE && type <= ALL_DEVICES) ZOptimization.this.mDeviceType = type;
+            if (type >= PHONE && type <= ALL) ZOptimization.this.mDeviceType = type;
             return this;
         }
 

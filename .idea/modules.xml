@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/ZOptimization/ZOptimization.iml" filepath="$PROJECT_DIR$/ZOptimization/ZOptimization.iml" />
       <module fileurl="file://$PROJECT_DIR$/ZOptimizationLibrary.iml" filepath="$PROJECT_DIR$/ZOptimizationLibrary.iml" />
       <module fileurl="file://$PROJECT_DIR$/ZOptimizationSample/ZOptimizationSample.iml" filepath="$PROJECT_DIR$/ZOptimizationSample/ZOptimizationSample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Zoptimization.iml" filepath="$PROJECT_DIR$/Zoptimization.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

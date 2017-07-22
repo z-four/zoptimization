@@ -6,10 +6,10 @@ import android.graphics.Point;
 import android.view.Display;
 import android.view.WindowManager;
 
-public class ZUtils {
+public class Utils {
 
-    static boolean checkIfNotZero (float value) {
-        return value > 0;
+    static boolean isEmpty (float value) {
+        return value <= 0;
     }
 
     static boolean isNull(Object... object) {
@@ -39,19 +39,11 @@ public class ZUtils {
         return context.getResources().getDisplayMetrics().scaledDensity;
     }
 
-    public static int getCurrentDisplayWidth(Context context) {
+    public static Point getCurrentDisplayMetrics(Context context) {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
-        return size.x;
-    }
-
-    public static int getCurrentDisplayHeight(Context context) {
-        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        return size.y;
+        return size;
     }
 }
