@@ -46,8 +46,8 @@ public class MainActivity extends Activity {
         setContentView(getProperContentView());
         
         //How to get density & scaledDensity for tested device
-        float density = getResources().getDisplayMetrics().density; // = DEFAULT_DENSITY
-        float scaledDensity = getResources().getDisplayMetrics().scaledDensity; // = DEFAULT_SCALED_DENSITY
+        float density = getResources().getDisplayMetrics().density; //DEFAULT_DENSITY
+        float scaledDensity = getResources().getDisplayMetrics().scaledDensity; //DEFAULT_SCALED_DENSITY
         ...
     }
 
@@ -55,7 +55,7 @@ public class MainActivity extends Activity {
         return ZOptimization.withContext(this)
                 .layout(R.layout.activity_main)
                 .excludeIds(R.id.divider, R.id.login_button) //Disable optimization for specific ids.
-                .deviceType(ZConst.DeviceType.TABLET) //Optimized for tablets only.
+                .deviceType(ZOptimization.DeviceType.TABLET) //Optimized for tablets only.
                 .defaultDisplaySize(DEFAULT_DISPLAY_WIDTH, DEFAULT_DISPLAY_HEIGHT) //Tested device display width & height
                 .measureConfiguration(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_DENSITY) //Setup dp optimization.
                 .textConfiguration(TypedValue.COMPLEX_UNIT_SP, DEFAULT_SCALED_DENSITY) //Setup sp optimization.
@@ -71,7 +71,7 @@ Download
 
 ```groovy
 dependencies {
-  compile 'com.github.z-four:zoptimization:1.0.1'
+  compile 'com.github.z-four:zoptimization:1.0.2'
 }
 ```
 
