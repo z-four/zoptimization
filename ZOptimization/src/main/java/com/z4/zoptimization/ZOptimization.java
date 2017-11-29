@@ -2,8 +2,8 @@ package com.z4.zoptimization;
 
 import android.app.Service;
 import android.content.Context;
-import android.graphics.Point;
 import android.support.annotation.LayoutRes;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,20 +23,18 @@ import static com.z4.zoptimization.ZOptimization.DeviceType.PHONE;
 import static com.z4.zoptimization.ZOptimization.DeviceType.TABLET;
 import static com.z4.zoptimization.ZOptimization.OptimizationType.*;
 import static com.z4.zoptimization.Utils.*;
-import static android.util.TypedValue.COMPLEX_UNIT_PX;
 
 public class ZOptimization {
     private static final float TABLET_COF = 1.075f;
     private static final int E = 1;
     private static final int DEFAULT_SCREEN_VALUE = 1;
 
-    private String LOG_TAG = "zoptimization";
-
     private Context mContext;
     private LayoutInflater mLayoutInflater;
     private List<Integer> mExcludeIds;
     private Map<Short, List<Integer>> mConfigIds;
     private ViewGroup mViewGroup;
+    private ConfigBuilder mConfigBuilder;
 
     private int mLayoutId;
 
@@ -44,13 +42,6 @@ public class ZOptimization {
     private int mCurrentDisplayHeight = DEFAULT_SCREEN_VALUE;
     private int mDefaultDisplayWidth = DEFAULT_SCREEN_VALUE;
     private int mDefaultDisplayHeight = DEFAULT_SCREEN_VALUE;
-
-    private int mTextSizeComplexUnit = COMPLEX_UNIT_PX;
-    private int mViewSizeComplexUnit = COMPLEX_UNIT_PX;
-    private float mDefaultDensity = 1.0f;
-    private float mDefaultScaledDensity = 1.0f;
-    private float mCurrentDensity = 1.0f;
-    private float mCurrentScaledDensity = 1.0f;
 
     private short mDeviceType = ALL;
     private short mCurrDeviceType = PHONE;
@@ -80,13 +71,14 @@ public class ZOptimization {
     private void determinateDisplaySize() {
         if (isNull(mContext)) return;
 
-        Point point = getCurrentDisplayMetrics(mContext);
-        mCurrentDisplayWidth = point.x;
-        mCurrentDisplayHeight = point.y;
+        DisplayMetrics metrics = getCurrentDisplayMetrics(mContext);
+        mCurrentDisplayWidth = metrics.widthPixels;
+        mCurrentDisplayHeight = metrics.heightPixels;
     }
 
     private ViewGroup getViewGroup() {
-        return isNull(mViewGroup) ? (ViewGroup) mLayoutInflater.inflate(mLayoutId, null) : mViewGroup;
+        return isNull(mViewGroup) ? (ViewGroup) mLayoutInflater.inflate(mLayoutId, null)
+                : mViewGroup;
     }
 
     private ViewGroup beginOptimization() {
@@ -202,29 +194,33 @@ public class ZOptimization {
     }
 
     public int getProperMarginY(int marginY) {
-        if (mTextSizeComplexUnit != TypedValue.COMPLEX_UNIT_PX) {
-            marginY = (int) ((marginY * mDefaultDensity) / mCurrentDensity);
+        if (!isNull(mConfigBuilder) && mConfigBuilder.getTestedDeviceDensity() != -1) {
+            marginY = (int) ((marginY * mConfigBuilder.getTestedDeviceDensity())
+                    / mConfigBuilder.getCurrDeviceDensity());
         }
         return (mCurrentDisplayHeight * marginY) / mDefaultDisplayHeight;
     }
 
     public int getProperMarginX(int marginX) {
-        if (mTextSizeComplexUnit != TypedValue.COMPLEX_UNIT_PX) {
-            marginX = (int) ((marginX * mDefaultDensity) / mCurrentDensity);
+        if (!isNull(mConfigBuilder) && mConfigBuilder.getTestedDeviceDensity() != -1) {
+            marginX = (int) ((marginX * mConfigBuilder.getTestedDeviceDensity())
+                    / mConfigBuilder.getCurrDeviceDensity());
         }
         return (mCurrentDisplayWidth * marginX) / mDefaultDisplayWidth;
     }
 
     public int getProperTextSize(int currentSizeInPx) {
-        if (mTextSizeComplexUnit != TypedValue.COMPLEX_UNIT_PX) {
-            currentSizeInPx = (int) ((currentSizeInPx * mDefaultScaledDensity) / mCurrentScaledDensity);
+        if (!isNull(mConfigBuilder) && mConfigBuilder.getTestedDeviceScaledDensity() != -1) {
+            currentSizeInPx = (int) ((currentSizeInPx * mConfigBuilder.getTestedDeviceScaledDensity())
+                    / mConfigBuilder.getCurrDeviceScaledDensity());
         }
         return (mCurrentDisplayHeight * currentSizeInPx) / mDefaultDisplayHeight;
     }
 
     private int getProperWidth(int currViewWidth) {
-        if (mViewSizeComplexUnit != TypedValue.COMPLEX_UNIT_PX) {
-            currViewWidth = (int) ((currViewWidth * mDefaultDensity) / mCurrentDensity);
+        if (!isNull(mConfigBuilder) && mConfigBuilder.getTestedDeviceDensity() != -1) {
+            currViewWidth = (int) ((currViewWidth * mConfigBuilder.getTestedDeviceDensity())
+                    / mConfigBuilder.getCurrDeviceDensity());
         }
         return (mCurrentDisplayWidth * currViewWidth) / mDefaultDisplayWidth;
     }
@@ -235,8 +231,9 @@ public class ZOptimization {
     }
 
     private int getProperHeight(int currViewHeight) {
-        if (mViewSizeComplexUnit != TypedValue.COMPLEX_UNIT_PX) {
-            currViewHeight = (int) ((currViewHeight * mDefaultDensity) / mCurrentDensity);
+        if (!isNull(mConfigBuilder) && mConfigBuilder.getTestedDeviceDensity() != -1) {
+            currViewHeight = (int) ((currViewHeight * mConfigBuilder.getTestedDeviceDensity())
+                    / mConfigBuilder.getCurrDeviceDensity());
         }
         return (mCurrentDisplayHeight * currViewHeight) / mDefaultDisplayHeight;
     }
@@ -250,7 +247,7 @@ public class ZOptimization {
         return new ZOptimization(context);
     }
 
-    public static ZOptimizationBuilder withContext(Context context) {
+    public static ZOptimizationBuilder with(Context context) {
         return get(context).new ZOptimizationBuilder();
     }
 
@@ -302,7 +299,7 @@ public class ZOptimization {
             return this;
         }
 
-        public ZOptimizationBuilder defaultDisplaySize(int width, int height) {
+        public ZOptimizationBuilder testedDeviceDisplaySize(int width, int height) {
             ZOptimization.this.mDefaultDisplayWidth = width;
             ZOptimization.this.mDefaultDisplayHeight = height;
             return this;
@@ -314,22 +311,9 @@ public class ZOptimization {
             return this;
         }
 
-        public ZOptimizationBuilder measureConfiguration(int complexUnit, float defaultScreenDensity) {
-            ZOptimization.this.mCurrentDensity = getDensity(mContext);
-            ZOptimization.this.mDefaultDensity = defaultScreenDensity;
-            ZOptimization.this.mViewSizeComplexUnit = complexUnit;
-            return this;
-        }
-
-        public ZOptimizationBuilder textConfiguration(int complexUnit, float defaultScreenDensity) {
-            ZOptimization.this.mTextSizeComplexUnit = complexUnit;
-            ZOptimization.this.mDefaultScaledDensity = defaultScreenDensity;
-            ZOptimization.this.mCurrentScaledDensity = getScaledDensity(mContext);
-            return this;
-        }
-
-        public ZOptimizationBuilder determinateDisplaySize() {
-            ZOptimization.this.determinateDisplaySize();
+        public ZOptimizationBuilder config(ConfigBuilder configBuilder) {
+            mConfigBuilder = configBuilder;
+            if (!isNull(configBuilder)) configBuilder.configure(mContext);
             return this;
         }
 
@@ -339,6 +323,7 @@ public class ZOptimization {
         }
 
         public ViewGroup makeOptimization() {
+            ZOptimization.this.determinateDisplaySize();
             return beginOptimization();
         }
     }

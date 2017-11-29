@@ -2,8 +2,7 @@ package com.z4.zoptimization;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.graphics.Point;
-import android.view.Display;
+import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
 public class Utils {
@@ -31,19 +30,19 @@ public class Utils {
                 >= Configuration.SCREENLAYOUT_SIZE_LARGE;
     }
 
-    static float getDensity(Context context) {
+    static DisplayMetrics getCurrentDisplayMetrics(Context context) {
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics metrics = new DisplayMetrics();
+        wm.getDefaultDisplay().getMetrics(metrics);
+
+        return metrics;
+    }
+
+    public static float getDensity(Context context) {
         return context.getResources().getDisplayMetrics().density;
     }
 
-    static float getScaledDensity(Context context) {
+    public static float getScaledDensity(Context context) {
         return context.getResources().getDisplayMetrics().scaledDensity;
-    }
-
-    public static Point getCurrentDisplayMetrics(Context context) {
-        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        return size;
     }
 }
