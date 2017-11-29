@@ -54,7 +54,7 @@ public class MainActivity extends Activity {
     }
 
     protected ViewGroup getProperContentView() {
-        return ZOptimization.withContext(this)
+        return ZOptimization.with(this)
                 .layout(R.layout.activity_main)
                 .excludeIds(R.id.divider, R.id.login_button) //Disable optimization for specific ids.
                 .deviceType(ZOptimization.DeviceType.TABLET) //Optimized for tablets only.
