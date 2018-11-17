@@ -3,14 +3,12 @@ package com.z4.zoptimization;
 import android.app.Service;
 import android.content.Context;
 import android.support.annotation.LayoutRes;
-import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -18,62 +16,56 @@ import java.util.Map;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.widget.ListPopupWindow.WRAP_CONTENT;
-import static com.z4.zoptimization.ZOptimization.DeviceType.ALL;
-import static com.z4.zoptimization.ZOptimization.DeviceType.PHONE;
-import static com.z4.zoptimization.ZOptimization.DeviceType.TABLET;
-import static com.z4.zoptimization.ZOptimization.OptimizationType.*;
-import static com.z4.zoptimization.Utils.*;
+import static com.z4.zoptimization.Utils.isEmpty;
+import static com.z4.zoptimization.Utils.isNull;
+import static com.z4.zoptimization.Utils.isTablet;
+import static com.z4.zoptimization.ZOptimization.Device.PHONE;
+import static com.z4.zoptimization.ZOptimization.Device.TABLET;
+import static com.z4.zoptimization.ZOptimization.Type.MARGIN;
+import static com.z4.zoptimization.ZOptimization.Type.PADDING;
+import static com.z4.zoptimization.ZOptimization.Type.TEXT;
+import static com.z4.zoptimization.ZOptimization.Type.VIEW;
 
-public class ZOptimization {
+public final class ZOptimization {
     private static final float TABLET_COF = 1.075f;
     private static final int E = 1;
-    private static final int DEFAULT_SCREEN_VALUE = 1;
 
     private Context mContext;
     private LayoutInflater mLayoutInflater;
-    private List<Integer> mExcludeIds;
-    private Map<Short, List<Integer>> mConfigIds;
+    private Map<Type, List<Integer>> mConfigIds;
+    private Map<Type, List<Class>> mConfigClasses;
     private ViewGroup mViewGroup;
-    private ConfigBuilder mConfigBuilder;
+    private DeviceBuilder mDeviceBuilder;
 
     private int mLayoutId;
 
-    private int mCurrentDisplayWidth = DEFAULT_SCREEN_VALUE;
-    private int mCurrentDisplayHeight = DEFAULT_SCREEN_VALUE;
-    private int mDefaultDisplayWidth = DEFAULT_SCREEN_VALUE;
-    private int mDefaultDisplayHeight = DEFAULT_SCREEN_VALUE;
-
-    private short mDeviceType = ALL;
-    private short mCurrDeviceType = PHONE;
     private boolean mPaddingEnabled = true;
     private boolean mMarginEnabled = true;
     private boolean mViewSizeEnabled = true;
     private boolean mTextSizeEnabled = true;
 
-    public interface OptimizationType {
-        short VIEW = 1;
-        short TEXT = 2;
-        short PADDING = 3;
-        short MARGIN = 4;
+    private Device mDeviceType = Device.BOTH;
+    private Device mCurrDeviceType = Device.PHONE;
+
+    public enum Type {
+        VIEW,
+        TEXT,
+        PADDING,
+        MARGIN,
+        ALL
     }
 
-    public interface DeviceType {
-        short PHONE = 1;
-        short TABLET = 2;
-        short ALL = 3;
+    public enum Device {
+        TABLET,
+        PHONE,
+        BOTH
     }
+
+    private ZOptimization() {}
 
     private ZOptimization(Context context) {
         mContext = context;
         mLayoutInflater = (LayoutInflater) mContext.getSystemService(Service.LAYOUT_INFLATER_SERVICE);
-    }
-
-    private void determinateDisplaySize() {
-        if (isNull(mContext)) return;
-
-        DisplayMetrics metrics = getCurrentDisplayMetrics(mContext);
-        mCurrentDisplayWidth = metrics.widthPixels;
-        mCurrentDisplayHeight = metrics.heightPixels;
     }
 
     private ViewGroup getViewGroup() {
@@ -82,10 +74,10 @@ public class ZOptimization {
     }
 
     private ViewGroup beginOptimization() {
-        ViewGroup viewGroup = getViewGroup();
-        mCurrDeviceType = isTablet(mContext) ? TABLET : PHONE;
+        final ViewGroup viewGroup = getViewGroup();
 
-        if (isNull(mContext) || !isProperDeviceType()) return viewGroup;
+        mCurrDeviceType = !isNull(mContext) && isTablet(mContext) ? TABLET : PHONE;
+        if (isNull(mContext, mDeviceBuilder) || !isProperDeviceType()) return viewGroup;
 
         return fullOptimization(viewGroup);
     }
@@ -93,7 +85,7 @@ public class ZOptimization {
     private ViewGroup fullOptimization(ViewGroup viewGroup) {
         makeOptimization(viewGroup);
 
-        int viewGroupChildCount = viewGroup.getChildCount();
+        final int viewGroupChildCount = viewGroup.getChildCount();
 
         for (int i = 0; i < viewGroupChildCount; i++) {
             View view = viewGroup.getChildAt(i);
@@ -104,16 +96,14 @@ public class ZOptimization {
     }
 
     private void makeOptimization(View view) {
-        if (!containsId(view.getId())) {
-            if (mViewSizeEnabled) sizeOptimization(view);
-            if (mMarginEnabled) marginOptimization(view);
-            if (mPaddingEnabled) paddingOptimization(view);
-            if (mTextSizeEnabled) textSizeOptimization(view);
-        }
+        if (mViewSizeEnabled) sizeOptimization(view);
+        if (mMarginEnabled) marginOptimization(view);
+        if (mPaddingEnabled) paddingOptimization(view);
+        if (mTextSizeEnabled) textSizeOptimization(view);
     }
 
     private void textSizeOptimization(View view) {
-        if (!isOptimizationDisable(TEXT, view.getId())) {
+        if (!isOptimizationDisabled(TEXT, view)) {
             if (view instanceof TextView) {
                 int textSize = getProperTextSize((int) ((TextView) view).getTextSize());
                 ((TextView) view).setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
@@ -122,11 +112,11 @@ public class ZOptimization {
     }
 
     private void sizeOptimization(View view) {
-        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+        final ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
 
-        if (!isNull(layoutParams) && !isOptimizationDisable(VIEW, view.getId())) {
-            int width = layoutParams.width;
-            int height = layoutParams.height;
+        if (!isNull(layoutParams) && !isOptimizationDisabled(VIEW, view)) {
+            final int width = layoutParams.width;
+            final int height = layoutParams.height;
 
             int properWidth = width != WRAP_CONTENT && width != MATCH_PARENT ?
                     getProperWidth(width) : width;
@@ -145,7 +135,7 @@ public class ZOptimization {
     }
 
     private void paddingOptimization(View view) {
-        if (!isOptimizationDisable(PADDING, view.getId())) {
+        if (!isOptimizationDisabled(PADDING, view)) {
             int properTopPadding = getProperParam(getProperMarginY(view.getPaddingTop()));
             int properBottomPadding = getProperParam(getProperMarginY(view.getPaddingBottom()));
             int properLeftPadding = getProperParam(getProperMarginX(view.getPaddingLeft()));
@@ -158,7 +148,7 @@ public class ZOptimization {
     private void marginOptimization(View view) {
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
 
-        if (!isNull(params) && !isOptimizationDisable(MARGIN, view.getId())) {
+        if (!isNull(params) && !isOptimizationDisabled(MARGIN, view)) {
             int marginTop = getProperParam(getProperMarginY(params.topMargin));
             int marginBottom = getProperParam(getProperMarginY(params.bottomMargin));
             int marginLeft = getProperParam(getProperMarginX(params.leftMargin));
@@ -174,16 +164,20 @@ public class ZOptimization {
     }
 
     private boolean isProperDeviceType() {
-        return (mDeviceType == ALL || mDeviceType == mCurrDeviceType);
+        return (mDeviceType == Device.BOTH || mDeviceType == mCurrDeviceType);
     }
 
-    private boolean isOptimizationDisable (short optimizationType, int id) {
-        return !isNull(mConfigIds) && mConfigIds.containsKey(optimizationType)
-                && mConfigIds.get(optimizationType).contains(id);
-    }
+    private boolean isOptimizationDisabled(Type type, View view) {
+        boolean isContainsId = !isNull(mConfigIds) && mConfigIds.containsKey(type)
+                && mConfigIds.get(type).contains(view.getId());
+        boolean isContainsClass = !isNull(mConfigClasses) && mConfigClasses.containsKey(type)
+                && mConfigClasses.get(type).contains(view.getClass());
+        isContainsId = isContainsId || !isNull(mConfigIds) && mConfigIds.containsKey(Type.ALL)
+                && mConfigIds.get(Type.ALL).contains(view.getId());
+        isContainsClass = isContainsClass || !isNull(mConfigClasses) && mConfigClasses.containsKey(Type.ALL)
+                && mConfigClasses.get(Type.ALL).contains(view.getClass());
 
-    private boolean containsId(int id) {
-        return !isNull(mExcludeIds) && mExcludeIds.contains(id);
+        return isContainsId || isContainsClass;
     }
 
     private int getProperParam(int value) {
@@ -194,61 +188,50 @@ public class ZOptimization {
     }
 
     public int getProperMarginY(int marginY) {
-        if (!isNull(mConfigBuilder) && mConfigBuilder.getTestedDeviceDensity() != -1) {
-            marginY = (int) ((marginY * mConfigBuilder.getTestedDeviceDensity())
-                    / mConfigBuilder.getCurrDeviceDensity());
+        if (!isNull(mDeviceBuilder) && mDeviceBuilder.getTestedDeviceDensity() != -1) {
+            marginY = (int) ((marginY * mDeviceBuilder.getTestedDeviceDensity())
+                    / mDeviceBuilder.getCurrDeviceDensity());
         }
-        return (mCurrentDisplayHeight * marginY) / mDefaultDisplayHeight;
+        return (mDeviceBuilder.getCurrentDisplayHeight() * marginY) / mDeviceBuilder.getTestedDisplayHeight();
     }
 
     public int getProperMarginX(int marginX) {
-        if (!isNull(mConfigBuilder) && mConfigBuilder.getTestedDeviceDensity() != -1) {
-            marginX = (int) ((marginX * mConfigBuilder.getTestedDeviceDensity())
-                    / mConfigBuilder.getCurrDeviceDensity());
+        if (!isNull(mDeviceBuilder) && mDeviceBuilder.getTestedDeviceDensity() != -1) {
+            marginX = (int) ((marginX * mDeviceBuilder.getTestedDeviceDensity())
+                    / mDeviceBuilder.getCurrDeviceDensity());
         }
-        return (mCurrentDisplayWidth * marginX) / mDefaultDisplayWidth;
+        return (mDeviceBuilder.getCurrentDisplayWidth() * marginX) / mDeviceBuilder.getTestedDisplayWidth();
     }
 
-    public int getProperTextSize(int currentSizeInPx) {
-        if (!isNull(mConfigBuilder) && mConfigBuilder.getTestedDeviceScaledDensity() != -1) {
-            currentSizeInPx = (int) ((currentSizeInPx * mConfigBuilder.getTestedDeviceScaledDensity())
-                    / mConfigBuilder.getCurrDeviceScaledDensity());
+    public int getProperTextSize(int currSizeInPx) {
+        if (!isNull(mDeviceBuilder) && mDeviceBuilder.getTestedDeviceScaledDensity() != -1) {
+            currSizeInPx = (int) ((currSizeInPx * mDeviceBuilder.getTestedDeviceScaledDensity())
+                    / mDeviceBuilder.getCurrDeviceScaledDensity());
         }
-        return (mCurrentDisplayHeight * currentSizeInPx) / mDefaultDisplayHeight;
+        return (mDeviceBuilder.getCurrentDisplayHeight() * currSizeInPx) / mDeviceBuilder.getTestedDisplayHeight();
     }
 
-    private int getProperWidth(int currViewWidth) {
-        if (!isNull(mConfigBuilder) && mConfigBuilder.getTestedDeviceDensity() != -1) {
-            currViewWidth = (int) ((currViewWidth * mConfigBuilder.getTestedDeviceDensity())
-                    / mConfigBuilder.getCurrDeviceDensity());
+    public int getProperWidth(int currViewWidth) {
+        if (!isNull(mDeviceBuilder) && mDeviceBuilder.getTestedDeviceDensity() != -1) {
+            currViewWidth = (int) ((currViewWidth * mDeviceBuilder.getTestedDeviceDensity())
+                    / mDeviceBuilder.getCurrDeviceDensity());
         }
-        return (mCurrentDisplayWidth * currViewWidth) / mDefaultDisplayWidth;
+        return (mDeviceBuilder.getCurrentDisplayWidth() * currViewWidth) / mDeviceBuilder.getTestedDisplayWidth();
     }
 
-    public int getProperWidth(int currViewWidth, int defDisplayWidth) {
-        mDefaultDisplayWidth = defDisplayWidth;
-        return getProperWidth(currViewWidth);
-    }
-
-    private int getProperHeight(int currViewHeight) {
-        if (!isNull(mConfigBuilder) && mConfigBuilder.getTestedDeviceDensity() != -1) {
-            currViewHeight = (int) ((currViewHeight * mConfigBuilder.getTestedDeviceDensity())
-                    / mConfigBuilder.getCurrDeviceDensity());
+    public int getProperHeight(int currViewHeight) {
+        if (!isNull(mDeviceBuilder) && mDeviceBuilder.getTestedDeviceDensity() != -1) {
+            currViewHeight = (int) ((currViewHeight * mDeviceBuilder.getTestedDeviceDensity())
+                    / mDeviceBuilder.getCurrDeviceDensity());
         }
-        return (mCurrentDisplayHeight * currViewHeight) / mDefaultDisplayHeight;
+
+        return (mDeviceBuilder.getCurrentDisplayHeight() * currViewHeight) / mDeviceBuilder.getTestedDisplayHeight();
     }
 
-    public int getProperHeight(int currViewHeight, int defDisplayHeight) {
-        mDefaultDisplayHeight = defDisplayHeight;
-        return getProperHeight(currViewHeight);
-    }
-
-    public static ZOptimization get(Context context) {
-        return new ZOptimization(context);
-    }
+    public static ZOptimization init() { return new ZOptimization(); }
 
     public static ZOptimizationBuilder with(Context context) {
-        return get(context).new ZOptimizationBuilder();
+        return new ZOptimization(context).new ZOptimizationBuilder();
     }
 
     //Builder
@@ -256,23 +239,12 @@ public class ZOptimization {
 
         private ZOptimizationBuilder() {}
 
-        public ZOptimizationBuilder paddingEnable(boolean enable) {
-            ZOptimization.this.mPaddingEnabled = enable;
-            return this;
-        }
-
-        public ZOptimizationBuilder viewSizeEnable(boolean enable) {
-            ZOptimization.this.mViewSizeEnabled = enable;
-            return this;
-        }
-
-        public ZOptimizationBuilder marginEnable(boolean enable) {
-            ZOptimization.this.mMarginEnabled = enable;
-            return this;
-        }
-
-        public ZOptimizationBuilder textSizeEnable(boolean enable) {
-            ZOptimization.this.mTextSizeEnabled = enable;
+        public ZOptimizationBuilder enable(boolean padding, boolean margin, boolean viewSize,
+                                           boolean textSize) {
+            ZOptimization.this.mPaddingEnabled = padding;
+            ZOptimization.this.mMarginEnabled = margin;
+            ZOptimization.this.mViewSizeEnabled = viewSize;
+            ZOptimization.this.mTextSizeEnabled = textSize;
             return this;
         }
 
@@ -286,45 +258,35 @@ public class ZOptimization {
             return this;
         }
 
-        public ZOptimizationBuilder disableOptimization(short optimizationType, Integer... ids) {
-            if (isNull(ZOptimization.this.mConfigIds)) ZOptimization.this.mConfigIds = new HashMap<>();
-
-            ZOptimization.this.mConfigIds.put(optimizationType, Arrays.asList(ids));
+        public ZOptimizationBuilder exclude(Type type, Class... classes) {
+            if (isNull(ZOptimization.this.mConfigClasses)) {
+                ZOptimization.this.mConfigClasses = new HashMap<>();
+            }
+            ZOptimization.this.mConfigClasses.put(type, Arrays.asList(classes));
 
             return this;
         }
 
-        public ZOptimizationBuilder excludeIds(Integer... ids) {
-            ZOptimization.this.mExcludeIds = new ArrayList<>(Arrays.asList(ids));
+        public ZOptimizationBuilder exclude(Type type, Integer... ids) {
+            if (isNull(ZOptimization.this.mConfigIds)) {
+                ZOptimization.this.mConfigIds = new HashMap<>();
+            }
+            ZOptimization.this.mConfigIds.put(type, Arrays.asList(ids));
+
             return this;
         }
 
-        public ZOptimizationBuilder testedDeviceDisplaySize(int width, int height) {
-            ZOptimization.this.mDefaultDisplayWidth = width;
-            ZOptimization.this.mDefaultDisplayHeight = height;
+        public ZOptimizationBuilder onlyFor(Device type) {
+            mDeviceType = type;
             return this;
         }
 
-        public ZOptimizationBuilder currentDisplaySize(int width, int height) {
-            ZOptimization.this.mCurrentDisplayWidth = width;
-            ZOptimization.this.mCurrentDisplayHeight = height;
+        public ZOptimizationBuilder config(DeviceBuilder deviceBuilder) {
+            mDeviceBuilder = deviceBuilder;
+            if (!isNull(mDeviceBuilder)) mDeviceBuilder.configure(mContext);
             return this;
         }
 
-        public ZOptimizationBuilder config(ConfigBuilder configBuilder) {
-            mConfigBuilder = configBuilder;
-            if (!isNull(configBuilder)) configBuilder.configure(mContext);
-            return this;
-        }
-
-        public ZOptimizationBuilder deviceType(short type) {
-            if (type >= PHONE && type <= ALL) ZOptimization.this.mDeviceType = type;
-            return this;
-        }
-
-        public ViewGroup makeOptimization() {
-            ZOptimization.this.determinateDisplaySize();
-            return beginOptimization();
-        }
+        public ViewGroup execute() { return beginOptimization(); }
     }
 }

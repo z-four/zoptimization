@@ -1,4 +1,4 @@
-package constants;
+package com.z4.sample.zoptimizationsample;
 
 public interface Constants {
     String PACIFICO_FONT = "fonts/pacifico.ttf";

@@ -5,7 +5,7 @@ import android.content.res.Configuration;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
-public class Utils {
+abstract class Utils {
 
     static boolean isEmpty (float value) {
         return value <= 0;
@@ -13,7 +13,7 @@ public class Utils {
 
     static boolean isNull(Object... object) {
         boolean isNull = false;
-        int objectsCount = object.length;
+        final int objectsCount = object.length;
 
         for(int i = 0; i < objectsCount; i++) {
             if(object[i] == null) {
@@ -38,11 +38,11 @@ public class Utils {
         return metrics;
     }
 
-    public static float getDensity(Context context) {
+    static float getDensity(Context context) {
         return context.getResources().getDisplayMetrics().density;
     }
 
-    public static float getScaledDensity(Context context) {
+    static float getScaledDensity(Context context) {
         return context.getResources().getDisplayMetrics().scaledDensity;
     }
 }
