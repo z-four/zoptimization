@@ -105,20 +105,6 @@ private ViewGroup getProperContentView(ViewGroup viewGroup) {
 }
 ```
 
-#### Сalculate the size of the view
-
-```java
-private void calculate() { 
-     ZOptimization optimization = ZOptimization.init();
-     int properMarginStart = optimization.getProperMarginX(marginStart);
-     int properMarginTop = optimization.getProperMarginY(marginTop);
-     int properPaddingEnd = optimization.getProperMarginX(paddingEnd);
-     int properWidth = optimization.getProperWidth(viewWidth);
-     int properHeight = optimization.getProperHeight(viewHeight);
-     int properTextSize = optimization.getProperTextSize(textSize);
- }
-```
-
 #### Note: If the config is not specified, then COMPLEX_UNIT_PX will be used by default
 
 Download
