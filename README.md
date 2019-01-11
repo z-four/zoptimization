@@ -1,7 +1,7 @@
 What is ZOptimization
 --------
 
-Android library for optimization your UI. You don't need to create dimens.xml file for ldpi / hdpi / xhdpi / xxhdpi and so on.
+Android library for optimization your UI. You don't need to create dimens for ldpi/hdpi/xhdpi/xxhdpi and so on.
 All you have to do is create only one dimens.xml file and put values for a specific device.
 
 Example
@@ -12,7 +12,7 @@ Example
 Usage
 --------
 
-#### Create an xml file for a specific screen.
+#### Create layout for a specific screen.
 
 ```xml
  <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -37,7 +37,7 @@ Usage
   </RelativeLayout>
 ```
 
-#### Acvitiy
+#### Activity
 
 ```java
 public class MainActivity extends Activity {
@@ -50,8 +50,6 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
-        //Simple example
         setContentView(getProperContentView());
         
         //Data binding example
@@ -95,7 +93,7 @@ public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 }
     
 private ViewGroup getProperContentView(ViewGroup viewGroup) {
-    return ZOptimization.with(this)
+    return ZOptimization.with(viewGroup.getContext())
             .layout(viewGroup)
             .config(new DeviceBuilder()
                     .applyDp(TESTED_DEVICE_DENSITY)
