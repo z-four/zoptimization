@@ -13,10 +13,8 @@ abstract class Utils {
 
     static boolean isNull(Object... object) {
         boolean isNull = false;
-        final int objectsCount = object.length;
-
-        for(int i = 0; i < objectsCount; i++) {
-            if(object[i] == null) {
+        for (Object o : object) {
+            if (o == null) {
                 isNull = true;
                 break;
             }
