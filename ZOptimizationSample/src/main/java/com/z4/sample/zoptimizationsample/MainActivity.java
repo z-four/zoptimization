@@ -4,17 +4,18 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
-import android.util.Log;
-import android.util.TimingLogger;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.z4.zoptimization.DeviceBuilder;
 import com.z4.zoptimization.ZOptimization;
 
 import static android.graphics.Typeface.createFromAsset;
-import static com.z4.sample.zoptimizationsample.Constants.*;
+import static com.z4.sample.zoptimizationsample.Constants.PACIFICO_FONT;
+import static com.z4.sample.zoptimizationsample.Constants.TESTED_DEVICE_DENSITY;
+import static com.z4.sample.zoptimizationsample.Constants.TESTED_DEVICE_DISPLAY_HEIGHT;
+import static com.z4.sample.zoptimizationsample.Constants.TESTED_DEVICE_DISPLAY_WIDTH;
+import static com.z4.sample.zoptimizationsample.Constants.TESTED_DEVICE_SCALED_DENSITY;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,7 +24,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(getProperContentView());
 
-        initUi();
+        setUpView();
+    }
+
+    private void setUpView() {
+        ((TextView) findViewById(R.id.splash_text)).setTypeface(createFromAsset(getAssets(),
+                PACIFICO_FONT));
     }
 
     private ViewGroup getProperContentView() {
@@ -38,10 +44,5 @@ public class MainActivity extends AppCompatActivity {
                         .applySp(TESTED_DEVICE_SCALED_DENSITY)
                         .testedScreen(TESTED_DEVICE_DISPLAY_WIDTH, TESTED_DEVICE_DISPLAY_HEIGHT))
                 .execute();
-    }
-
-    protected void initUi() {
-        ((TextView) findViewById(R.id.splash_text)).setTypeface(createFromAsset(getAssets(),
-                PACIFICO_FONT));
     }
 }
