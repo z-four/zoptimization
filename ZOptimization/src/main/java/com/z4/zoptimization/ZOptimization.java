@@ -190,7 +190,7 @@ public final class ZOptimization {
     public int getProperMarginY(int marginY) {
         if (!isNull(mDeviceBuilder) && mDeviceBuilder.getTestedDeviceDensity() != -1) {
             marginY = (int) ((marginY * mDeviceBuilder.getTestedDeviceDensity())
-                    / mDeviceBuilder.getCurrDeviceDensity());
+                    / mDeviceBuilder.getCurrentDeviceDensity());
         }
         return (mDeviceBuilder.getCurrentDisplayHeight() * marginY) / mDeviceBuilder.getTestedDisplayHeight();
     }
@@ -198,7 +198,7 @@ public final class ZOptimization {
     public int getProperMarginX(int marginX) {
         if (!isNull(mDeviceBuilder) && mDeviceBuilder.getTestedDeviceDensity() != -1) {
             marginX = (int) ((marginX * mDeviceBuilder.getTestedDeviceDensity())
-                    / mDeviceBuilder.getCurrDeviceDensity());
+                    / mDeviceBuilder.getCurrentDeviceDensity());
         }
         return (mDeviceBuilder.getCurrentDisplayWidth() * marginX) / mDeviceBuilder.getTestedDisplayWidth();
     }
@@ -206,7 +206,7 @@ public final class ZOptimization {
     public int getProperTextSize(int currSizeInPx) {
         if (!isNull(mDeviceBuilder) && mDeviceBuilder.getTestedDeviceScaledDensity() != -1) {
             currSizeInPx = (int) ((currSizeInPx * mDeviceBuilder.getTestedDeviceScaledDensity())
-                    / mDeviceBuilder.getCurrDeviceScaledDensity());
+                    / mDeviceBuilder.getCurrentDeviceScaledDensity());
         }
         return (mDeviceBuilder.getCurrentDisplayHeight() * currSizeInPx) / mDeviceBuilder.getTestedDisplayHeight();
     }
@@ -214,7 +214,7 @@ public final class ZOptimization {
     public int getProperWidth(int currViewWidth) {
         if (!isNull(mDeviceBuilder) && mDeviceBuilder.getTestedDeviceDensity() != -1) {
             currViewWidth = (int) ((currViewWidth * mDeviceBuilder.getTestedDeviceDensity())
-                    / mDeviceBuilder.getCurrDeviceDensity());
+                    / mDeviceBuilder.getCurrentDeviceDensity());
         }
         return (mDeviceBuilder.getCurrentDisplayWidth() * currViewWidth) / mDeviceBuilder.getTestedDisplayWidth();
     }
@@ -222,7 +222,7 @@ public final class ZOptimization {
     public int getProperHeight(int currViewHeight) {
         if (!isNull(mDeviceBuilder) && mDeviceBuilder.getTestedDeviceDensity() != -1) {
             currViewHeight = (int) ((currViewHeight * mDeviceBuilder.getTestedDeviceDensity())
-                    / mDeviceBuilder.getCurrDeviceDensity());
+                    / mDeviceBuilder.getCurrentDeviceDensity());
         }
 
         return (mDeviceBuilder.getCurrentDisplayHeight() * currViewHeight) / mDeviceBuilder.getTestedDisplayHeight();
