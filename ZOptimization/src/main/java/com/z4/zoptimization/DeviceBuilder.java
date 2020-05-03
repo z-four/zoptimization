@@ -9,8 +9,8 @@ import static com.z4.zoptimization.Utils.getScaledDensity;
 import static com.z4.zoptimization.Utils.isNull;
 
 /**
- * Provides a means to define optimization config
- * which depends on user needs and tested device screen params
+ * Provides a means to define optimization config.
+ * which depends on user needs and tested device screen params.
  *
  * @author Dmitriy Zhyzhko
  */
@@ -37,7 +37,7 @@ public final class DeviceBuilder {
      * This method is used to apply tested device dp.
      *
      * @param density This is the device dp that user has tested ui for.
-     * @return builder instance to make possible to add more config.
+     * @return Builder's instance to make possible to add more config.
      */
     public DeviceBuilder applyDp(float density) {
         mTestedDeviceDensity = density;
@@ -48,7 +48,7 @@ public final class DeviceBuilder {
      * This method is used to apply tested device sp.
      *
      * @param scaledDensity This is the device sp that user has tested ui for.
-     * @return builder instance to make possible to add more config.
+     * @return Builder's instance to make possible to add more config.
      */
     public DeviceBuilder applySp(float scaledDensity) {
         mTestedDeviceScaledDensity = scaledDensity;
@@ -61,7 +61,7 @@ public final class DeviceBuilder {
      *
      * @param width  Current device screen width.
      * @param height Current device screen height.
-     * @return builder instance to make possible to add more config.
+     * @return Builder's instance to make possible to add more config.
      */
     public DeviceBuilder currentScreen(int width, int height) {
         mCurrentDisplayWidth = width;
@@ -75,7 +75,7 @@ public final class DeviceBuilder {
      *
      * @param width  Tested device screen width.
      * @param height Tested device screen height.
-     * @return builder instance to make possible to add more config.
+     * @return Builder's instance to make possible to add more config.
      */
     public DeviceBuilder testedScreen(int width, int height) {
         mTestedDisplayWidth = width;
