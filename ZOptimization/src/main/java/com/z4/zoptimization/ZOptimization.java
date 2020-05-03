@@ -65,7 +65,8 @@ public final class ZOptimization {
 
     private ZOptimization(Context context) {
         mContext = context;
-        mLayoutInflater = (LayoutInflater) mContext.getSystemService(Service.LAYOUT_INFLATER_SERVICE);
+        mLayoutInflater =
+                (LayoutInflater) mContext.getSystemService(Service.LAYOUT_INFLATER_SERVICE);
     }
 
     private ViewGroup getViewGroup() {
@@ -184,10 +185,11 @@ public final class ZOptimization {
         if (isEmpty(value)) return value;
         value -= E;
 
-        return mCurrDeviceType == TABLET ? value *= TABLET_COF : value;
+        int properValue = mCurrDeviceType == TABLET ? value *= TABLET_COF : value;
+        return properValue == 0 ? ++properValue : properValue;
     }
 
-    public int getProperMarginY(int marginY) {
+    private int getProperMarginY(int marginY) {
         if (!isNull(mDeviceBuilder) && mDeviceBuilder.getTestedDeviceDensity() != -1) {
             marginY = (int) ((marginY * mDeviceBuilder.getTestedDeviceDensity())
                     / mDeviceBuilder.getCurrentDeviceDensity());
@@ -195,7 +197,7 @@ public final class ZOptimization {
         return (mDeviceBuilder.getCurrentDisplayHeight() * marginY) / mDeviceBuilder.getTestedDisplayHeight();
     }
 
-    public int getProperMarginX(int marginX) {
+    private int getProperMarginX(int marginX) {
         if (!isNull(mDeviceBuilder) && mDeviceBuilder.getTestedDeviceDensity() != -1) {
             marginX = (int) ((marginX * mDeviceBuilder.getTestedDeviceDensity())
                     / mDeviceBuilder.getCurrentDeviceDensity());
@@ -203,7 +205,7 @@ public final class ZOptimization {
         return (mDeviceBuilder.getCurrentDisplayWidth() * marginX) / mDeviceBuilder.getTestedDisplayWidth();
     }
 
-    public int getProperTextSize(int currSizeInPx) {
+    private int getProperTextSize(int currSizeInPx) {
         if (!isNull(mDeviceBuilder) && mDeviceBuilder.getTestedDeviceScaledDensity() != -1) {
             currSizeInPx = (int) ((currSizeInPx * mDeviceBuilder.getTestedDeviceScaledDensity())
                     / mDeviceBuilder.getCurrentDeviceScaledDensity());
@@ -211,7 +213,7 @@ public final class ZOptimization {
         return (mDeviceBuilder.getCurrentDisplayHeight() * currSizeInPx) / mDeviceBuilder.getTestedDisplayHeight();
     }
 
-    public int getProperWidth(int currViewWidth) {
+    private int getProperWidth(int currViewWidth) {
         if (!isNull(mDeviceBuilder) && mDeviceBuilder.getTestedDeviceDensity() != -1) {
             currViewWidth = (int) ((currViewWidth * mDeviceBuilder.getTestedDeviceDensity())
                     / mDeviceBuilder.getCurrentDeviceDensity());
@@ -219,7 +221,7 @@ public final class ZOptimization {
         return (mDeviceBuilder.getCurrentDisplayWidth() * currViewWidth) / mDeviceBuilder.getTestedDisplayWidth();
     }
 
-    public int getProperHeight(int currViewHeight) {
+    private int getProperHeight(int currViewHeight) {
         if (!isNull(mDeviceBuilder) && mDeviceBuilder.getTestedDeviceDensity() != -1) {
             currViewHeight = (int) ((currViewHeight * mDeviceBuilder.getTestedDeviceDensity())
                     / mDeviceBuilder.getCurrentDeviceDensity());
