@@ -26,6 +26,11 @@ import static com.z4.zoptimization.ZOptimization.Type.PADDING;
 import static com.z4.zoptimization.ZOptimization.Type.TEXT;
 import static com.z4.zoptimization.ZOptimization.Type.VIEW;
 
+/**
+ * Provides a means to optimize user interface.
+ *
+ * @author Dmitriy Zhyzhko
+ */
 public final class ZOptimization {
     private static final float TABLET_COF = 1.075f;
     private static final int E = 1;
@@ -61,19 +66,39 @@ public final class ZOptimization {
         BOTH
     }
 
-    private ZOptimization() {}
+    /**
+     * Private empty constructor since builder being used.
+     */
+    private ZOptimization() {
+    }
 
+    /**
+     * Private constructor with basic init.
+     *
+     * @param context Context of the component optimization should be executed for.
+     */
     private ZOptimization(Context context) {
         mContext = context;
         mLayoutInflater =
                 (LayoutInflater) mContext.getSystemService(Service.LAYOUT_INFLATER_SERVICE);
     }
 
+    /**
+     * Methods that returns ViewGroup depending of root view has been passed or not.
+     * Otherwise need to get root ViewGroup of the from LayoutId.
+     *
+     * @return Root view that going to be optimization start point.
+     **/
     private ViewGroup getViewGroup() {
         return isNull(mViewGroup) ? (ViewGroup) mLayoutInflater.inflate(mLayoutId, null)
                 : mViewGroup;
     }
 
+    /**
+     * Starts optimization.
+     *
+     * @return Fully optimized view.
+     **/
     private ViewGroup beginOptimization() {
         final ViewGroup viewGroup = getViewGroup();
 
@@ -83,6 +108,11 @@ public final class ZOptimization {
         return fullOptimization(viewGroup);
     }
 
+    /**
+     * Optimizes each view recursively.
+     *
+     * @return Fully optimized view.
+     **/
     private ViewGroup fullOptimization(ViewGroup viewGroup) {
         makeOptimization(viewGroup);
 
@@ -96,6 +126,11 @@ public final class ZOptimization {
         return viewGroup;
     }
 
+    /**
+     * Makes full or part optimization depending on user config.
+     *
+     * @param view This is the view that must be optimized.
+     **/
     private void makeOptimization(View view) {
         if (mViewSizeEnabled) sizeOptimization(view);
         if (mMarginEnabled) marginOptimization(view);
@@ -103,6 +138,11 @@ public final class ZOptimization {
         if (mTextSizeEnabled) textSizeOptimization(view);
     }
 
+    /**
+     * Makes text size optimization.
+     *
+     * @param view This is the view that must be optimized.
+     **/
     private void textSizeOptimization(View view) {
         if (!isOptimizationDisabled(TEXT, view)) {
             if (view instanceof TextView) {
@@ -112,6 +152,11 @@ public final class ZOptimization {
         }
     }
 
+    /**
+     * Makes view size optimization.
+     *
+     * @param view This is the view that must be optimized.
+     **/
     private void sizeOptimization(View view) {
         final ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
 
@@ -135,6 +180,11 @@ public final class ZOptimization {
         }
     }
 
+    /**
+     * Makes padding optimization.
+     *
+     * @param view This is the view that must be optimized.
+     **/
     private void paddingOptimization(View view) {
         if (!isOptimizationDisabled(PADDING, view)) {
             int properTopPadding = getProperParam(getProperMarginY(view.getPaddingTop()));
@@ -146,6 +196,11 @@ public final class ZOptimization {
         }
     }
 
+    /**
+     * Makes margins optimization.
+     *
+     * @param view This is the view that must be optimized.
+     **/
     private void marginOptimization(View view) {
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
 
@@ -164,10 +219,20 @@ public final class ZOptimization {
         }
     }
 
+    /**
+     * Checks if current device type can be optimized or not.
+     *
+     * @return Boolean that represents is optimization possible or not.
+     **/
     private boolean isProperDeviceType() {
         return (mDeviceType == Device.BOTH || mDeviceType == mCurrDeviceType);
     }
 
+    /**
+     * Checks if specific optimization type is disabled for a view or not.
+     *
+     * @return Boolean that represents is optimization possible or not.
+     **/
     private boolean isOptimizationDisabled(Type type, View view) {
         boolean isContainsId = !isNull(mConfigIds) && mConfigIds.containsKey(type)
                 && mConfigIds.get(type).contains(view.getId());
@@ -181,6 +246,11 @@ public final class ZOptimization {
         return isContainsId || isContainsClass;
     }
 
+    /**
+     * Fixes slight calculation error. Can be adjusted for tablets etc.
+     *
+     * @return Correct value.
+     **/
     private int getProperParam(int value) {
         if (isEmpty(value)) return value;
         value -= E;
@@ -189,6 +259,11 @@ public final class ZOptimization {
         return properValue == 0 ? ++properValue : properValue;
     }
 
+    /**
+     * Calculates proper vertical margin.
+     *
+     * @return Correct margin value.
+     **/
     private int getProperMarginY(int marginY) {
         if (!isNull(mDeviceBuilder) && mDeviceBuilder.getTestedDeviceDensity() != -1) {
             marginY = (int) ((marginY * mDeviceBuilder.getTestedDeviceDensity())
@@ -197,6 +272,11 @@ public final class ZOptimization {
         return (mDeviceBuilder.getCurrentDisplayHeight() * marginY) / mDeviceBuilder.getTestedDisplayHeight();
     }
 
+    /**
+     * Calculates proper horizontal margin.
+     *
+     * @return Correct margin value.
+     **/
     private int getProperMarginX(int marginX) {
         if (!isNull(mDeviceBuilder) && mDeviceBuilder.getTestedDeviceDensity() != -1) {
             marginX = (int) ((marginX * mDeviceBuilder.getTestedDeviceDensity())
@@ -205,6 +285,11 @@ public final class ZOptimization {
         return (mDeviceBuilder.getCurrentDisplayWidth() * marginX) / mDeviceBuilder.getTestedDisplayWidth();
     }
 
+    /**
+     * Calculates proper text size.
+     *
+     * @return Correct value.
+     **/
     private int getProperTextSize(int currSizeInPx) {
         if (!isNull(mDeviceBuilder) && mDeviceBuilder.getTestedDeviceScaledDensity() != -1) {
             currSizeInPx = (int) ((currSizeInPx * mDeviceBuilder.getTestedDeviceScaledDensity())
@@ -213,6 +298,11 @@ public final class ZOptimization {
         return (mDeviceBuilder.getCurrentDisplayHeight() * currSizeInPx) / mDeviceBuilder.getTestedDisplayHeight();
     }
 
+    /**
+     * Calculates proper width.
+     *
+     * @return Correct value.
+     **/
     private int getProperWidth(int currViewWidth) {
         if (!isNull(mDeviceBuilder) && mDeviceBuilder.getTestedDeviceDensity() != -1) {
             currViewWidth = (int) ((currViewWidth * mDeviceBuilder.getTestedDeviceDensity())
@@ -221,6 +311,11 @@ public final class ZOptimization {
         return (mDeviceBuilder.getCurrentDisplayWidth() * currViewWidth) / mDeviceBuilder.getTestedDisplayWidth();
     }
 
+    /**
+     * Calculates proper height.
+     *
+     * @return Correct value.
+     **/
     private int getProperHeight(int currViewHeight) {
         if (!isNull(mDeviceBuilder) && mDeviceBuilder.getTestedDeviceDensity() != -1) {
             currViewHeight = (int) ((currViewHeight * mDeviceBuilder.getTestedDeviceDensity())
@@ -230,17 +325,38 @@ public final class ZOptimization {
         return (mDeviceBuilder.getCurrentDisplayHeight() * currViewHeight) / mDeviceBuilder.getTestedDisplayHeight();
     }
 
-    public static ZOptimization init() { return new ZOptimization(); }
+    /**
+     * Method to create instance of ZOptimization class.
+     **/
+    public static ZOptimization init() {
+        return new ZOptimization();
+    }
 
+    /**
+     * Method to create builder instance.
+     *
+     * @param context Context of the component optimization should be executed for.
+     **/
     public static ZOptimizationBuilder with(Context context) {
         return new ZOptimization(context).new ZOptimizationBuilder();
     }
 
-    //Builder
+    /**
+     * Builder via user can adjust optimization config.
+     */
     public class ZOptimizationBuilder {
 
-        private ZOptimizationBuilder() {}
+        /**
+         * Private empty constructor since builder's execute() method needs to be used.
+         */
+        private ZOptimizationBuilder() {
+        }
 
+        /**
+         * Adjusts optimization types that gonna be executed.
+         *
+         * @return Builder's instance to make possible to add more config.
+         */
         public ZOptimizationBuilder enable(boolean padding, boolean margin, boolean viewSize,
                                            boolean textSize) {
             ZOptimization.this.mPaddingEnabled = padding;
@@ -250,16 +366,33 @@ public final class ZOptimization {
             return this;
         }
 
+
+        /**
+         * Layout id of the component.
+         *
+         * @return Builder's instance to make possible to add more config.
+         */
         public ZOptimizationBuilder layout(@LayoutRes int layoutId) {
             ZOptimization.this.mLayoutId = layoutId;
             return this;
         }
 
+        /**
+         * ViewGroup of the component.
+         *
+         * @return Builder's instance to make possible to add more config.
+         */
         public ZOptimizationBuilder layout(ViewGroup viewGroup) {
             ZOptimization.this.mViewGroup = viewGroup;
             return this;
         }
 
+
+        /**
+         * Prevents some types optimization for a specific classes.
+         *
+         * @return Builder's instance to make possible to add more config.
+         */
         public ZOptimizationBuilder exclude(Type type, Class... classes) {
             if (isNull(ZOptimization.this.mConfigClasses)) {
                 ZOptimization.this.mConfigClasses = new HashMap<>();
@@ -269,6 +402,11 @@ public final class ZOptimization {
             return this;
         }
 
+        /**
+         * Prevents some types optimization for a specific view ids.
+         *
+         * @return Builder's instance to make possible to add more config.
+         */
         public ZOptimizationBuilder exclude(Type type, Integer... ids) {
             if (isNull(ZOptimization.this.mConfigIds)) {
                 ZOptimization.this.mConfigIds = new HashMap<>();
@@ -278,17 +416,36 @@ public final class ZOptimization {
             return this;
         }
 
+        /**
+         * Adjusts which device type can be optimized (TABLET, PHONE etc).
+         *
+         * @return Builder's instance to make possible to add more config.
+         */
         public ZOptimizationBuilder onlyFor(Device type) {
             mDeviceType = type;
             return this;
         }
 
+        /**
+         * Sets device builder with all needed params to be used for optimization process.
+         * Mostly screen size, density and scaled density for tested and current devices.
+         *
+         * @return Builder's instance to make possible to add more config.
+         */
         public ZOptimizationBuilder config(DeviceBuilder deviceBuilder) {
             mDeviceBuilder = deviceBuilder;
             if (!isNull(mDeviceBuilder)) mDeviceBuilder.configure(mContext);
             return this;
         }
 
-        public ViewGroup execute() { return beginOptimization(); }
+        /**
+         * Method that used as start point of optimization.
+         * Should be called once all configs have been adjusted.
+         *
+         * @return Fully optimized view.
+         */
+        public ViewGroup execute() {
+            return beginOptimization();
+        }
     }
 }
