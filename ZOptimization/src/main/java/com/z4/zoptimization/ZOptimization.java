@@ -202,6 +202,7 @@ public final class ZOptimization {
      * @param view This is the view that must be optimized.
      **/
     private void marginOptimization(View view) {
+        if (!(view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams)) return;
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
 
         if (!isNull(params) && !isOptimizationDisabled(MARGIN, view)) {
