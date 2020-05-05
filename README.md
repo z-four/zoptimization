@@ -1,8 +1,7 @@
 What is ZOptimization
 --------
 
-Android library for optimization your UI. You don't need to create dimens for ldpi/hdpi/xhdpi/xxhdpi and so on.
-All you have to do is create only one dimens.xml file and put values for a specific device.
+Android library that provides a means to optimize user interface without having configuration qualifiers for different pixel densities. The main idea is to make layout looks the same as on trusted device with correctly configured layout.
 
 Example
 --------
@@ -37,7 +36,7 @@ Usage
   </RelativeLayout>
 ```
 
-#### Activity
+#### Activity example
 
 ```java
 public class MainActivity extends Activity {
@@ -52,12 +51,12 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(getProperContentView());
         
-        //Data binding example
+        // Data binding example (if needed)
         ViewGroup viewGroup = getProperContentView();
         setContentView(viewGroup);
         DataBindingUtil.bind<T>(viewGroup);
         
-        //How to get display metrics for tested device
+        // How to get display metrics for the tested device
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         float density = metrics.density; //TESTED_DEVICE_DENSITY
         float scaledDensity = metrics.scaledDensity; //TESTED_DEVICE_SCALED_DENSITY
@@ -69,10 +68,10 @@ public class MainActivity extends Activity {
     private ViewGroup getProperContentView() {
         return ZOptimization.with(this)
                 .layout(R.layout.activity_main)
-                .onlyFor(ZOptimization.Device.TABLET) //Optimized for tablets only.
-                .exclude(ZOptimization.Type.ALL, R.id.login_button) //Disable optimization for specific ids.
-                .exclude(ZOptimization.Type.TEXT, AppCompatButton.class) //Disable only text size optimization for specific classes.
-                .enable(false, true, true, true) //Enable/disable optimization for a specific type
+                .onlyFor(ZOptimization.Device.PHONE) // Optimized for phone only, also TABLET or BOTH can be used.
+                .exclude(ZOptimization.Type.ALL, R.id.login_button) // Disable optimization for specific ids.
+                .exclude(ZOptimization.Type.TEXT, AppCompatButton.class) // Disable text size optimization for specific classes.
+                .enable(false, true, true, true) // Enable/disable optimization types
                 .config(new DeviceBuilder()
                         .applyDp(TESTED_DEVICE_DENSITY)
                         .applySp(TESTED_DEVICE_SCALED_DENSITY)
@@ -82,7 +81,7 @@ public class MainActivity extends Activity {
 }
 ```
 
-#### Recycler view
+#### RecyclerView example
 ```java
 @Override
 public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -110,7 +109,7 @@ Download
 
 ```groovy
 dependencies {
-  compile 'com.github.z-four:zoptimization:1.0.4'
+  compile 'com.github.z-four:zoptimization:1.0.5'
 }
 ```
 
@@ -133,10 +132,10 @@ Methods
 |layout(int)| Set layout id which need to optimize|
 |layout(ViewGroup)| Set ViewGroup which need to optimize|
 |onlyFor(enum)| Set device type (default: BOTH)|
-|testedScreen(int, int)| Set default display size (width, height)|
+|testedScreen(int, int)| Set tested display size (width, height)|
 |currentScreen(int, int)| Set current display size (width, height)|
-|exclude(enum, int[])| Setup optimization type (ZOptimization.Type) & specific ids for disable|
-|exclude(enum, class[])| Setup optimization type (ZOptimization.Type) & specific classes for disable|
+|exclude(enum, int[])| Setup optimization type & specific ids should be excluded|
+|exclude(enum, class[])| Setup optimization type & specific classes should be excluded|
 |applySp(float)| Setup tested device scaled density|
 |applyDp(float)| Setup tested device density|
 |enable(boolean, boolean, boolean, boolean)| Enable/disable optimization for all the types|
