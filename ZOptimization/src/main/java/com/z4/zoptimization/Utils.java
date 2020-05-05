@@ -7,10 +7,6 @@ import android.view.WindowManager;
 
 abstract class Utils {
 
-    static boolean isEmpty (float value) {
-        return value <= 0;
-    }
-
     static boolean isNull(Object... object) {
         boolean isNull = false;
         for (Object o : object) {
