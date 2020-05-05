@@ -1,11 +1,11 @@
 package com.z4.sample.zoptimizationsample;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatButton;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.z4.zoptimization.DeviceBuilder;
 import com.z4.zoptimization.ZOptimization;
@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
                 .layout(R.layout.activity_main)
                 .onlyFor(ZOptimization.Device.PHONE)
                 .exclude(ZOptimization.Type.ALL, R.id.login_button)
-                .exclude(ZOptimization.Type.TEXT, AppCompatButton.class)
                 .enable(false, true, true, true)
                 .config(new DeviceBuilder()
                         .applyDp(TESTED_DEVICE_DENSITY)

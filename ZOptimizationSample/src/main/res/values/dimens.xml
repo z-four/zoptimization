@@ -11,7 +11,7 @@
     <dimen name="splash_edittext_container_margin_horizontal">10dp</dimen>
     <dimen name="splash_edittext_text_size">11sp</dimen>
     <dimen name="splash_edittext_image_margin_horizontal">10dp</dimen>
-    <dimen name="splash_edittext_image_size">20sp</dimen>
+    <dimen name="splash_edittext_image_size">20dp</dimen>
     <dimen name="splash_edittext_show_button_width">55dp</dimen>
     <dimen name="splash_edittext_show_button_text_size">8sp</dimen>
     <dimen name="splash_edittext_show_button_margins">7dp</dimen>
