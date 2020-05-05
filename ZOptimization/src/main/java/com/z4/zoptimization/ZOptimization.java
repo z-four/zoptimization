@@ -2,12 +2,13 @@ package com.z4.zoptimization;
 
 import android.app.Service;
 import android.content.Context;
-import android.support.annotation.LayoutRes;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.LayoutRes;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,7 +17,6 @@ import java.util.Map;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.widget.ListPopupWindow.WRAP_CONTENT;
-import static com.z4.zoptimization.Utils.isEmpty;
 import static com.z4.zoptimization.Utils.isNull;
 import static com.z4.zoptimization.Utils.isTablet;
 import static com.z4.zoptimization.ZOptimization.Device.PHONE;
@@ -69,8 +69,7 @@ public final class ZOptimization {
     /**
      * Private empty constructor since builder being used.
      */
-    private ZOptimization() {
-    }
+    private ZOptimization() {}
 
     /**
      * Private constructor with basic init.
@@ -144,7 +143,7 @@ public final class ZOptimization {
      * @param view This is the view that must be optimized.
      **/
     private void textSizeOptimization(View view) {
-        if (!isOptimizationDisabled(TEXT, view)) {
+        if (isOptimizationEnabled(TEXT, view)) {
             if (view instanceof TextView) {
                 int textSize = getProperTextSize((int) ((TextView) view).getTextSize());
                 ((TextView) view).setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
@@ -160,7 +159,7 @@ public final class ZOptimization {
     private void sizeOptimization(View view) {
         final ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
 
-        if (!isNull(layoutParams) && !isOptimizationDisabled(VIEW, view)) {
+        if (!isNull(layoutParams) && isOptimizationEnabled(VIEW, view)) {
             final int width = layoutParams.width;
             final int height = layoutParams.height;
 
@@ -186,7 +185,7 @@ public final class ZOptimization {
      * @param view This is the view that must be optimized.
      **/
     private void paddingOptimization(View view) {
-        if (!isOptimizationDisabled(PADDING, view)) {
+        if (isOptimizationEnabled(PADDING, view)) {
             int properTopPadding = getProperParam(getProperMarginY(view.getPaddingTop()));
             int properBottomPadding = getProperParam(getProperMarginY(view.getPaddingBottom()));
             int properLeftPadding = getProperParam(getProperMarginX(view.getPaddingLeft()));
@@ -205,7 +204,7 @@ public final class ZOptimization {
         if (!(view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams)) return;
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
 
-        if (!isNull(params) && !isOptimizationDisabled(MARGIN, view)) {
+        if (!isNull(params) && isOptimizationEnabled(MARGIN, view)) {
             int marginTop = getProperParam(getProperMarginY(params.topMargin));
             int marginBottom = getProperParam(getProperMarginY(params.bottomMargin));
             int marginLeft = getProperParam(getProperMarginX(params.leftMargin));
@@ -234,7 +233,7 @@ public final class ZOptimization {
      *
      * @return Boolean that represents is optimization possible or not.
      **/
-    private boolean isOptimizationDisabled(Type type, View view) {
+    private boolean isOptimizationEnabled(Type type, View view) {
         boolean isContainsId = !isNull(mConfigIds) && mConfigIds.containsKey(type)
                 && mConfigIds.get(type).contains(view.getId());
         boolean isContainsClass = !isNull(mConfigClasses) && mConfigClasses.containsKey(type)
@@ -253,7 +252,7 @@ public final class ZOptimization {
      * @return Correct value.
      **/
     private int getProperParam(int value) {
-        if (isEmpty(value)) return value;
+        if (value <= 0) return value;
         value -= E;
 
         int properValue = mCurrDeviceType == TABLET ? value *= TABLET_COF : value;
@@ -329,9 +328,7 @@ public final class ZOptimization {
     /**
      * Method to create instance of ZOptimization class.
      **/
-    public static ZOptimization init() {
-        return new ZOptimization();
-    }
+    public static ZOptimization init() { return new ZOptimization(); }
 
     /**
      * Method to create builder instance.
