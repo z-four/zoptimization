@@ -143,7 +143,7 @@ public final class ZOptimization {
      * @param view This is the view that must be optimized.
      **/
     private void textSizeOptimization(View view) {
-        if (isOptimizationEnabled(TEXT, view)) {
+        if (!isOptimizationDisabled(TEXT, view)) {
             if (view instanceof TextView) {
                 int textSize = getProperTextSize((int) ((TextView) view).getTextSize());
                 ((TextView) view).setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
@@ -159,7 +159,7 @@ public final class ZOptimization {
     private void sizeOptimization(View view) {
         final ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
 
-        if (!isNull(layoutParams) && isOptimizationEnabled(VIEW, view)) {
+        if (!isNull(layoutParams) && !isOptimizationDisabled(VIEW, view)) {
             final int width = layoutParams.width;
             final int height = layoutParams.height;
 
@@ -185,7 +185,7 @@ public final class ZOptimization {
      * @param view This is the view that must be optimized.
      **/
     private void paddingOptimization(View view) {
-        if (isOptimizationEnabled(PADDING, view)) {
+        if (!isOptimizationDisabled(PADDING, view)) {
             int properTopPadding = getProperParam(getProperMarginY(view.getPaddingTop()));
             int properBottomPadding = getProperParam(getProperMarginY(view.getPaddingBottom()));
             int properLeftPadding = getProperParam(getProperMarginX(view.getPaddingLeft()));
@@ -204,7 +204,7 @@ public final class ZOptimization {
         if (!(view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams)) return;
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
 
-        if (!isNull(params) && isOptimizationEnabled(MARGIN, view)) {
+        if (!isNull(params) && !isOptimizationDisabled(MARGIN, view)) {
             int marginTop = getProperParam(getProperMarginY(params.topMargin));
             int marginBottom = getProperParam(getProperMarginY(params.bottomMargin));
             int marginLeft = getProperParam(getProperMarginX(params.leftMargin));
@@ -233,7 +233,7 @@ public final class ZOptimization {
      *
      * @return Boolean that represents is optimization possible or not.
      **/
-    private boolean isOptimizationEnabled(Type type, View view) {
+    private boolean isOptimizationDisabled(Type type, View view) {
         boolean isContainsId = !isNull(mConfigIds) && mConfigIds.containsKey(type)
                 && mConfigIds.get(type).contains(view.getId());
         boolean isContainsClass = !isNull(mConfigClasses) && mConfigClasses.containsKey(type)
