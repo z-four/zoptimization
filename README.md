@@ -1,7 +1,7 @@
-What is ZOptimization
+About
 --------
 
-Android library that provides a means to optimize user interface without having configuration qualifiers for different pixel densities. The main idea is to make layout looks the same as on trusted device with correctly configured layout.
+A way to optimize the user interface without having configuration qualifiers for different pixel densities.
 
 Example
 --------
@@ -50,11 +50,6 @@ public class MainActivity extends Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getProperContentView());
-        
-        // Data binding example (if needed)
-        ViewGroup viewGroup = getProperContentView();
-        setContentView(viewGroup);
-        DataBindingUtil.bind<T>(viewGroup);
         
         // How to get display metrics for the tested device
         DisplayMetrics metrics = getResources().getDisplayMetrics();
